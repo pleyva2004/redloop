@@ -1,0 +1,30 @@
+# Local, offline config — everything runs against Ollama, no API keys.
+concurrency: 6
+corpus: runs/corpus.jsonl
+
+target:
+  model: gemma4:26b
+  base_url: http://localhost:11434/v1
+  temperature: 0.0
+  max_tokens: 512
+  concurrency: 6
+  extra_body:
+    reasoning_effort: none   # disable Gemma thinking -> ~10x faster
+
+judge:
+  model: gemma4:26b
+  base_url: http://localhost:11434/v1
+  temperature: 0.0
+  max_tokens: 200
+  concurrency: 6
+  extra_body:
+    reasoning_effort: none
+
+attacker:
+  model: gemma4:26b
+  base_url: http://localhost:11434/v1
+  temperature: 1.0
+  max_tokens: 500
+  concurrency: 4
+  extra_body:
+    reasoning_effort: none
