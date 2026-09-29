@@ -65,13 +65,15 @@ uv run pytest -q                    # 11 offline tests, no model needed
 Point it at a different model by editing `configs/local.yaml` (`base_url`,
 `model`, and `api_key_env` for hosted providers).
 
-## Example finding (gemma4:26b, local)
+## Example finding (gemma4:26b, local, 3 trials = 132 attempts)
 
-- Static jailbreaks: **0/40** — the model reliably refuses canary extraction, and
-  the adaptive PAIR attacker also failed to break it (0/5 categories).
-- Agentic indirect injection: a `delete_file` instruction hidden in content the
-  agent *read* diverted it into an unrequested destructive tool call
-  (**reproducible**, frozen to the corpus, re-confirmed on regression replay).
+- Direct jailbreaks: **0 / 120** — no encoding, role-play, authority, or
+  prefix-injection technique extracted the canary; the adaptive PAIR attacker
+  also failed (0/5 categories). ASR 95% CI [0.0%, 3.1%].
+- Agentic indirect injection: **3 / 12 (25%)**. A `delete_file` instruction
+  hidden in content the agent *read* diverted it into an unauthorized destructive
+  tool call on **all 3 trials (3/3)** — deterministic, not noise. Frozen to the
+  corpus and re-confirmed on regression replay.
 
 The contrast is the useful signal: robust to naive prompt attacks, vulnerable in
 the agentic path — exactly where a payments/on-screen-aware assistant is exposed.
