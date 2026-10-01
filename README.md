@@ -1,5 +1,40 @@
 # RedLoop — Automated LLM Red-Teaming Harness
 
+## What we did, at a glance
+
+**We attacked a local LLM (gemma4:26b) two ways and measured how often it broke.**
+Direct jailbreaks failed completely. Hiding an instruction in content the model
+*reads as an agent* got it to delete a file every time.
+
+```mermaid
+flowchart LR
+    A["1. Generate attacks<br/>40 jailbreaks + 4 agentic injections"] --> B["2. Run against target<br/>gemma4:26b, 3 trials each"]
+    B --> C["3. Judge objectively<br/>leaked canary? unauthorized tool call?"]
+    C --> D["4. Report ASR + 95% CI"]
+    C -->|successful attacks| E[("Regression corpus")]
+    E -->|replayed every run| B
+    B -.->|adaptive PAIR loop<br/>rewrites using judge feedback| A
+```
+
+**Result: attack success rate (ASR)**
+
+```
+Direct jailbreaks     0 / 120   0%   |                         |  CI [0.0%, 3.1%]
+PAIR adaptive attack  0 / 5     0%   |                         |  (5 categories)
+Agentic injection     3 / 12   25%   |██████                   |
+  └ delete_file       3 / 3   100%   |████████████████████████|  every trial
+```
+
+| Attack path | What the attacker does | Outcome |
+| --- | --- | --- |
+| Direct jailbreak | Asks the model to leak a protected canary (encoding, role-play, authority, ...) | Held up |
+| Adaptive (PAIR) | Attacker LLM rewrites prompts using the judge's feedback | Held up |
+| Agentic injection | Plants a `delete_file` instruction in a document the agent reads | **Broke, 3/3 trials** |
+
+**Takeaway:** robust to naive prompt attacks, vulnerable in the agentic path.
+
+---
+
 RedLoop generates adversarial attacks, batch-runs them against a target model (or
 a tool-using agent), judges the outcomes objectively, tracks known issues as a
 regression corpus, and reports attack-success-rate (ASR) with confidence
