@@ -4,3 +4,12 @@ __pycache__/
 runs/
 .pytest_cache/
 .DS_Store
+
+# LaTeX build artifacts (rendered poster lives in docs/)
+poster/main.pdf
+poster/*.aux
+poster/*.log
+poster/*.out
+poster/*.fdb_latexmk
+poster/*.fls
+poster/*.synctex.gz
