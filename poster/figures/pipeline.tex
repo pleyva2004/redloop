@@ -1,0 +1,48 @@
+% Vertical pipeline figure for the one-pager.
+% Main stages stacked top-to-bottom; regression corpus on the right,
+% PAIR feedback loop on the left.
+\begin{tikzpicture}[
+    >=Stealth,
+    box/.style={
+      rectangle,
+      rounded corners=3pt,
+      draw=black!60,
+      fill=blue!4,
+      minimum height=1.05cm,
+      align=center,
+      inner sep=4pt,
+      text width=4.1cm,
+      font=\small
+    },
+    store/.style={
+      cylinder,
+      shape border rotate=90,
+      aspect=0.2,
+      draw=black!60,
+      fill=red!6,
+      align=center,
+      text width=1.6cm,
+      minimum height=1.35cm,
+      font=\small
+    },
+    arrow/.style={->, draw=black!60, shorten <=2pt, shorten >=2pt, line width=0.8pt},
+    loop/.style={->, draw=black!50, dashed, shorten <=2pt, shorten >=2pt, line width=0.7pt},
+    lbl/.style={font=\scriptsize, text=black!70, align=center},
+    node distance=0.75cm
+  ]
+
+  \node[box] (gen) {\textbf{Generate}\\[1pt]\footnotesize 40 jailbreaks + 4 injections};
+  \node[box, below=of gen] (tgt) {\textbf{Run target}\\[1pt]\footnotesize single-turn + canary, or\\agent loop + mock tools};
+  \node[box, below=of tgt] (jdg) {\textbf{Judge}\\[1pt]\footnotesize canary leaked?\\forbidden tool fired?};
+  \node[box, below=of jdg] (rep) {\textbf{Report}\\[1pt]\footnotesize ASR + Wilson 95\% CI};
+  \node[store] (corp) at ($(jdg.east) + (1.55,0)$) {\textbf{Regression}\\\footnotesize corpus};
+
+  \draw[arrow] (gen) -- (tgt);
+  \draw[arrow] (tgt) -- (jdg);
+  \draw[arrow] (jdg) -- (rep);
+  \draw[arrow] (jdg.east) -- node[lbl, above] {hits} (corp.west);
+  \draw[arrow] (corp.north) |- node[lbl, pos=0.75, above] {replay} (tgt.east);
+  \draw[loop] (jdg.west) -- ++(-0.45,0) |- (gen.west);
+  \node[lbl, rotate=90, anchor=south] at ($(gen.west)!0.5!(jdg.west) + (-0.47,0)$) {PAIR: rewrite from judge feedback};
+
+\end{tikzpicture}
